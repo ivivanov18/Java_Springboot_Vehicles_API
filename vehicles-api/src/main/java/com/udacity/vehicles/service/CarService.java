@@ -8,6 +8,7 @@ import com.udacity.vehicles.domain.car.CarRepository;
 import java.util.List;
 import java.util.Optional;
 
+import com.udacity.vehicles.domain.manufacturer.Manufacturer;
 import org.springframework.stereotype.Service;
 
 /**
@@ -68,9 +69,28 @@ public class CarService {
         if (car.getId() != null) {
             return repository.findById(car.getId())
                     .map(carToBeUpdated -> {
-                        carToBeUpdated.setDetails(car.getDetails());
-                        carToBeUpdated.setLocation(car.getLocation());
-                        carToBeUpdated.setCondition(car.getCondition());
+                        if (car.getDetails() != null) {
+                            if (car.getDetails().getEngine() != null) {
+                                carToBeUpdated.getDetails().setEngine(car.getDetails().getEngine());
+                            }
+                            if (car.getDetails().getExternalColor() != null) {
+                                carToBeUpdated.getDetails().setExternalColor(car.getDetails().getExternalColor());
+                            }
+                            if (car.getDetails().getMileage() != null) {
+                                carToBeUpdated.getDetails().setMileage(car.getDetails().getMileage());
+                            }
+                            carToBeUpdated.getDetails().setManufacturer(
+                                    new Manufacturer(car.getDetails().getManufacturer().getCode(),
+                                                    car.getDetails().getManufacturer().getName()));
+                            carToBeUpdated.getDetails().setBody(car.getDetails().getBody());
+                            carToBeUpdated.getDetails().setModel(car.getDetails().getModel());
+                        }
+                        if (car.getLocation() != null) {
+                            carToBeUpdated.setLocation(new Location(car.getLocation().getLat(), car.getLocation().getLon()));
+                        }
+                        if (car.getCondition() != null) {
+                            carToBeUpdated.setCondition(car.getCondition());
+                        }
                         return repository.save(carToBeUpdated);
                     }).orElseThrow(CarNotFoundException::new);
         }
